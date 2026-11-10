@@ -36,6 +36,33 @@
       },
       "water_outlet_temperature": {
         "name": "Water outlet temperature"
+      },
+      "hwhp_upper_temperature": {
+        "name": "Upper tank temperature"
+      },
+      "hwhp_bottom_temperature": {
+        "name": "Bottom tank temperature"
+      },
+      "hwhp_outdoor_temperature": {
+        "name": "Air inlet temperature"
+      },
+      "hwhp_exhaust_temperature": {
+        "name": "Compressor discharge temperature"
+      },
+      "hwhp_outdoor_coil_temperature": {
+        "name": "Evaporator temperature"
+      },
+      "hwhp_tank_coil_temperature": {
+        "name": "Tank coil temperature"
+      },
+      "hwhp_expansion_valve": {
+        "name": "Expansion valve"
+      },
+      "hwhp_timer_1": {
+        "name": "Timer 1"
+      },
+      "hwhp_timer_2": {
+        "name": "Timer 2"
       }
     },
     "switch": {
@@ -135,6 +162,27 @@
       },
       "defrosting": {
         "name": "Defrosting"
+      },
+      "hwhp_compressor": {
+        "name": "Compressor"
+      },
+      "hwhp_fan_high": {
+        "name": "Fan high"
+      },
+      "hwhp_fan_low": {
+        "name": "Fan low"
+      },
+      "hwhp_electric_heater": {
+        "name": "Electric heater"
+      },
+      "hwhp_defrost": {
+        "name": "Defrost"
+      },
+      "hwhp_disinfecting": {
+        "name": "Disinfection"
+      },
+      "hwhp_fault": {
+        "name": "Fault"
       }
     }
   },

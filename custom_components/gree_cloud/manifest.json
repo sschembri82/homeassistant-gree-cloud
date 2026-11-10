@@ -1,14 +1,20 @@
 {
   "domain": "gree_cloud",
   "name": "Gree Climate Cloud",
-  "codeowners": ["@davo22"],
+  "codeowners": [
+    "@davo22"
+  ],
   "config_flow": true,
   "dependencies": [],
   "documentation": "https://github.com/davo22/homeassistant-gree-cloud",
   "iot_class": "cloud_polling",
   "integration_type": "hub",
-  "loggers": ["greeclimate_davo22"],
-  "requirements": ["greeclimate-davo22==2.7.5"],
-  "version": "1.7.6",
+  "loggers": [
+    "greeclimate_davo22"
+  ],
+  "requirements": [
+    "greeclimate-davo22==2.7.5"
+  ],
+  "version": "1.7.6-ss.1",
   "brand": "gree"
 }

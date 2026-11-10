@@ -25,9 +25,11 @@ from .const import (
 from .coordinator import (
     CloudDeviceDataUpdateCoordinator,
     GreeCloudConfigEntry,
+    is_hwhp_device,
     is_pool_device,
 )
 from .entity import GreeCloudEntity
+from .hwhp_extra import HWHP_BINARY_SENSORS, HWHPBinarySensorDescription
 
 
 @dataclass(kw_only=True, frozen=True)
@@ -84,6 +86,13 @@ async def async_setup_entry(
     @callback
     def init_device(coordinator: CloudDeviceDataUpdateCoordinator) -> None:
         """Register the device (pool heat pumps only, #48)."""
+        if is_hwhp_device(coordinator):
+            # Fork: extra read-only HWHP flags (hwhp_extra.py).
+            async_add_entities(
+                GreeCloudHWHPBinarySensor(coordinator=coordinator, description=description)
+                for description in HWHP_BINARY_SENSORS
+            )
+            return
         if not is_pool_device(coordinator):
             return
         async_add_entities(
@@ -119,3 +128,27 @@ class GreeCloudBinarySensor(GreeCloudEntity, BinarySensorEntity):
     def is_on(self) -> bool | None:
         """Return the flag."""
         return _flag(self.coordinator.device, self.entity_description.prop)
+
+
+class GreeCloudHWHPBinarySensor(GreeCloudEntity, BinarySensorEntity):
+    """Fork: one extra HWHP flag from raw_properties (read-only)."""
+
+    entity_description: HWHPBinarySensorDescription
+
+    def __init__(
+        self,
+        coordinator: CloudDeviceDataUpdateCoordinator,
+        description: HWHPBinarySensorDescription,
+    ) -> None:
+        super().__init__(coordinator)
+        self.entity_description = description
+        self._attr_unique_id = f"{coordinator.device.device_info.mac}_{description.key}"
+
+    @property
+    def is_on(self) -> bool | None:
+        return self.entity_description.value_fn(self.coordinator.device.raw_properties)
+
+    @property
+    def extra_state_attributes(self):
+        fn = self.entity_description.attrs_fn
+        return fn(self.coordinator.device.raw_properties) if fn else None

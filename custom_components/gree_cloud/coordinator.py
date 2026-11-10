@@ -26,6 +26,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 _RECONNECT_FUNC_NAME = "async_reconnect_mqtt"
 _RECONNECT_MODULE = __name__.rsplit(".", 1)[0]  # custom_components.gree_cloud
 
+from .hwhp_extra import POLL_PROPS as HWHP_POLL_PROPS
 from .const import (
     CONF_SERVER,
     DISPATCH_DEVICE_DISCOVERED,
@@ -149,6 +150,10 @@ class HWHPAwareCloudDevice(CloudDevice):
         columns = _STANDARD_PROPS + _HWHP_EXTRA_PROPS + _SENSOR_EXTRA_PROPS
         if self.is_sub_device:
             columns = [*columns, PROP_ROOM_TEMP]
+        # Fork: once the unit is known to be an HWHP, also ask for the extra
+        # readings in hwhp_extra (appended, so upstream columns come first).
+        if (self.raw_properties.get(HWHP_PROP_WATER_TEMP) or 0) > 0:
+            columns = [*columns, *HWHP_POLL_PROPS]
         return columns
 
 

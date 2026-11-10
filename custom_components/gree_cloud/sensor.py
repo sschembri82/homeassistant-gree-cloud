@@ -41,6 +41,7 @@ from .coordinator import (
     is_hwhp_device,
     is_pool_device,
 )
+from .hwhp_extra import HWHP_SENSORS, HWHPSensorDescription
 from .pool import pool_temperature
 from .entity import GreeCloudEntity
 
@@ -166,6 +167,11 @@ async def async_setup_entry(
         """Register the device."""
         # Hot water heat pumps report consumption under a different key.
         if is_hwhp_device(coordinator):
+            # Fork: extra read-only HWHP readings (hwhp_extra.py).
+            async_add_entities(
+                GreeCloudHWHPSensor(coordinator=coordinator, description=description)
+                for description in HWHP_SENSORS
+            )
             return
         descriptions = POOL_SENSORS if is_pool_device(coordinator) else GREE_CLOUD_SENSORS
         async_add_entities(
@@ -201,3 +207,22 @@ class GreeCloudSensor(GreeCloudEntity, SensorEntity):
     def native_value(self) -> float | None:
         """Return the current value."""
         return self.entity_description.value_fn(self.coordinator.device)
+
+
+class GreeCloudHWHPSensor(GreeCloudEntity, SensorEntity):
+    """Fork: one extra HWHP reading from raw_properties (read-only)."""
+
+    entity_description: HWHPSensorDescription
+
+    def __init__(
+        self,
+        coordinator: CloudDeviceDataUpdateCoordinator,
+        description: HWHPSensorDescription,
+    ) -> None:
+        super().__init__(coordinator)
+        self.entity_description = description
+        self._attr_unique_id = f"{coordinator.device.device_info.mac}_{description.key}"
+
+    @property
+    def native_value(self):
+        return self.entity_description.value_fn(self.coordinator.device.raw_properties)
